@@ -27,6 +27,7 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
         tableGroups.dataSource = self
         searchGroup.delegate = self
+        
         fillData()
         filteredData = groups
     }

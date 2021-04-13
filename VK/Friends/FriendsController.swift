@@ -37,6 +37,11 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         tableFriends.dataSource = self
         searchFriend.delegate = self
         
+        NetworkManager.loadFriends(token: Session.inctance.token)
+        NetworkManager.loadFriendsByName(token: Session.inctance.token, searchName: "Анна")
+        NetworkManager.loadUsersByName(token: Session.inctance.token, searchName: "Палка")
+        
+        
         fillData()
         filteredData = friends
         writeGroupFriend()
@@ -48,7 +53,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         
         let userAuth = Session.inctance
         userAuth.getData()
-        message(name: searchUserName(userId: userAuth.userId))
+        //message(name: searchUserName(userId: userAuth.userId))
     }
     
     func searchUserName(userId: Int) -> String {

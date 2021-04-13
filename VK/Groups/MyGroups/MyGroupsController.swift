@@ -42,6 +42,10 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NetworkManager.loadGroups(token: Session.inctance.token)
+        NetworkManager.loadGroupsByName(token: Session.inctance.token, searchName: "programming Swift")
+        
         fillData()
     }
     
