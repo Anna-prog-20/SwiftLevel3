@@ -5,19 +5,8 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     @IBOutlet var tableFriends: UITableView!
     @IBOutlet weak var searchFriend: UISearchBar!
     
+    private var networkManager = NetworkManager(token: Session.inctance.token)
     var symbolControl: SymbolControl!
-    
-    var friendsName = [
-            "Bob",
-            "Sara",
-            "Koly",
-            "Bill",
-            "Any",
-            "Alex",
-            "Petya",
-            "Bib"
-        ]
-    
     var friends: [User] = []
     var groupSymbol: [GroupSymbol] = []
     var filteredData: [User]!
@@ -26,36 +15,40 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     private let headerID = String(describing: HeaderSection.self)
     
     func fillData() {
-        friendsName.sort()
-        for i in 0...friendsName.count - 1 {
-            let user = User(id: i, name: friendsName[i],login: "\(friendsName[i])@mail.ru", password: "\(friendsName[i])")
-            friends.append(user)
-        }
+       networkManager.loadFriends(completion: {
+            [weak self] result in
+            switch result {
+            case let .failure(error):
+                print(error)
+            case let .success(users):
+                self!.friends = users
+                self!.friends.sort(by: {$0.lastName<$1.lastName})
+                self!.filteredData = self!.friends
+                self!.writeGroupFriend()
+                self!.tableFriends.reloadData()
+            }
+        })
     }
     
     override func viewDidLoad() {
         tableFriends.dataSource = self
         searchFriend.delegate = self
         
-        fillData()
-        filteredData = friends
-        writeGroupFriend()
+        let userAuth = Session.inctance
+        userAuth.getData()
         
+        fillData()
         tableView.register(UINib(nibName: headerID, bundle: nil), forHeaderFooterViewReuseIdentifier: headerID)
         symbolControl = SymbolControl.init(frame: CGRect(x: view.frame.maxX - 20, y: 0, width: 20, height: view.frame.height),groupSymbol: groupSymbol)
         symbolControl.viewController = self
         symbolControl.isUserInteractionEnabled = true
-        
-        let userAuth = Session.inctance
-        userAuth.getData()
-        message(name: searchUserName(userId: userAuth.userId))
     }
     
     func searchUserName(userId: Int) -> String {
         let searchUser = friends.filter{
             $0.id == userId
         }
-        return searchUser[0].name
+        return searchUser[0].firstName
     }
     
     func message(name: String) {
@@ -87,7 +80,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         var k = 0
         var firstSymbol = ""
         for friend in filteredData {
-            let nameFriend = friend.name
+            let nameFriend = "\(friend.lastName) \(friend.firstName)"
             let friendSymbol = String(nameFriend[nameFriend.startIndex])
             if firstSymbol != friendSymbol {
                 k = i
@@ -125,8 +118,8 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Friend", for: indexPath) as! FriendsCell
         let friend = groupSymbol[indexPath.section].users[indexPath.row]
-        cell.nameFriend.text = friend.name
-        cell.faceImage.setImage(named: "\(friend.id)")
+        cell.nameFriend.text = "\(friend.lastName) \(friend.firstName)"
+        cell.faceImage.setImage(url: URL(string: friend.photo100)!)
         cell.backgroundColor = UIColor.white
         return cell
     }
@@ -142,7 +135,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filteredData = searchText.isEmpty ? friends : friends.filter({
             (item: User) -> Bool in
-            return item.name.range(of: searchText, options: .caseInsensitive) != nil
+            return item.firstName.range(of: searchText, options: .caseInsensitive) != nil || item.lastName.range(of: searchText, options: .caseInsensitive) != nil
         })
         groupSymbol = []
         writeGroupFriend()

@@ -12,6 +12,8 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
             "Group2",
             "Group3"
         ]
+//    var groups: [GroupOld] = []
+//    var filteredData: [GroupOld]!
     var groups: [Group] = []
     var filteredData: [Group]!
     
@@ -27,17 +29,17 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
         tableGroups.dataSource = self
         searchGroup.delegate = self
-        fillData()
+        //fillData()
         filteredData = groups
     }
     
-    func fillData() {
-        groupsName.sort()
-        for i in 0...groupsName.count - 1 {
-            let group = Group(id: i, name: groupsName[i])
-            groups.append(group)
-        }
-    }
+//    func fillData() {
+//        groupsName.sort()
+//        for i in 0...groupsName.count - 1 {
+//            let group = GroupOld(id: i, name: groupsName[i])
+//            groups.append(group)
+//        }
+//    }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return filteredData.count
@@ -70,7 +72,7 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
         
         filteredData = searchText.isEmpty ? groups : groups.filter({
             (item: Group) -> Bool in
-            return item.name.range(of: searchText, options: .caseInsensitive) != nil
+            return item.name?.range(of: searchText, options: .caseInsensitive) != nil
         })
         tableGroups.reloadData()
     }

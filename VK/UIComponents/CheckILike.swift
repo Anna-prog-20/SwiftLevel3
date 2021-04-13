@@ -26,6 +26,10 @@ class CheckILike: UIStackView {
         setupLable(width: frame.height, height: frame.height)
     }
     
+    func setCountLike(count: Int) {
+        countLike = count
+    }
+    
     private func changeImageLike (nameImage: String){
         let imageLike = UIImage(named: nameImage)
         buttonLike.setImage(imageLike, for: .normal)
