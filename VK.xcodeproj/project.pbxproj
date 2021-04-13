@@ -43,6 +43,7 @@
 		959B93FD2542A32F00F319EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 959B93FC2542A32F00F319EF /* Assets.xcassets */; };
 		959B94002542A32F00F319EF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 959B93FE2542A32F00F319EF /* LaunchScreen.storyboard */; };
 		959B942D2542D1F100F319EF /* FriendsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 959B942C2542D1F100F319EF /* FriendsController.swift */; };
+		95A2E78D25D254BF0048F3BF /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A2E78C25D254BF0048F3BF /* Session.swift */; };
 		95A6539325494DE20020197E /* GroupsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A6539225494DE20020197E /* GroupsController.swift */; };
 		95D026CE256CE0D700E94F0F /* DelegateGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D026CD256CE0D700E94F0F /* DelegateGroup.swift */; };
 		95D322C62552DA4900C3670A /* CheckILike.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D322C52552DA4900C3670A /* CheckILike.swift */; };
@@ -111,6 +112,7 @@
 		959B94062542A32F00F319EF /* VKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		959B94112542A32F00F319EF /* VKUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VKUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		959B942C2542D1F100F319EF /* FriendsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsController.swift; sourceTree = "<group>"; };
+		95A2E78C25D254BF0048F3BF /* Session.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		95A6539225494DE20020197E /* GroupsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsController.swift; sourceTree = "<group>"; };
 		95D026CD256CE0D700E94F0F /* DelegateGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegateGroup.swift; sourceTree = "<group>"; };
 		95D322C52552DA4900C3670A /* CheckILike.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckILike.swift; sourceTree = "<group>"; };
@@ -260,6 +262,7 @@
 				959536A425690C9700284745 /* CustomNavigationViewController.swift */,
 				959536AA25695AB500284745 /* CustomPopAnimator.swift */,
 				950067A8256A2FC800DD5BF5 /* CustomInteractiveTransition.swift */,
+				95A2E78C25D254BF0048F3BF /* Session.swift */,
 			);
 			path = VK;
 			sourceTree = "<group>";
@@ -416,6 +419,7 @@
 				95E54C1A2563970900419303 /* Indicator.swift in Sources */,
 				95616AEE256611F9007801D9 /* OnePhoto.swift in Sources */,
 				959B93F82542A32E00F319EF /* Authentication.swift in Sources */,
+				95A2E78D25D254BF0048F3BF /* Session.swift in Sources */,
 				95352373256568E100332547 /* OnePhotoController.swift in Sources */,
 				95169D92256029430005987A /* NewsCell.swift in Sources */,
 				959B942D2542D1F100F319EF /* FriendsController.swift in Sources */,
@@ -614,7 +618,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Anna-Shishmareva.Lesson9";
+				PRODUCT_BUNDLE_IDENTIFIER = "Anna-Shishmareva.VK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -632,7 +636,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Anna-Shishmareva.Lesson9";
+				PRODUCT_BUNDLE_IDENTIFIER = "Anna-Shishmareva.VK";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

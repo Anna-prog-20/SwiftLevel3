@@ -2,7 +2,18 @@ import UIKit
 
 class Authentication: UIViewController {
 
-    //var indicatorView: IndicatorView!
+    var friendsName = [
+            "Bob",
+            "Sara",
+            "Koly",
+            "Bill",
+            "Any",
+            "Alex",
+            "Petya",
+            "Bib"
+        ]
+    var friends: [User] = []
+    
     @IBOutlet weak var login: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var scrollView: UIScrollView!
@@ -18,6 +29,14 @@ class Authentication: UIViewController {
         }
     }
     
+    func fillData() {
+        friendsName.sort()
+        for i in 0...friendsName.count - 1 {
+            let user = User(id: i, name: friendsName[i],login: "\(friendsName[i])@mail.ru", password: "\(friendsName[i])")
+            friends.append(user)
+        }
+    }
+    
     func messageError() {
         let alert = UIAlertController(title: "Ошибка", message: "Введены неверные данные!!!", preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
@@ -28,7 +47,15 @@ class Authentication: UIViewController {
     func authentication(login: String?, password: String?) -> Bool {
         if login != nil && password != nil {
             if !login!.isEmpty || !password!.isEmpty {
-                return true
+                let searchUser = friends.filter{
+                    $0.login == login! &&
+                    $0.password == password!
+                }
+                if searchUser.count == 1 {
+                    let session = Session.inctance
+                    session.loginWithServer(token: "token", userId: searchUser[0].id)
+                    return true
+                }
             }
         }
         return false
@@ -36,6 +63,7 @@ class Authentication: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fillData()
         // Жест нажатия
         let hideKeyboardGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         // Присваиваем его UIScrollVIew
@@ -73,13 +101,17 @@ class Authentication: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-            
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+//
+//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func hideKeyboard() {
         self.scrollView?.endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
