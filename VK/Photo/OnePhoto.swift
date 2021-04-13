@@ -96,7 +96,7 @@ class OnePhoto: UIView, UIGestureRecognizerDelegate {
     
     private func insertInvisibleImage(idPhoto: Int, index: Int) {
         self.photoUser?.presentValueId = idPhoto + index
-        self.invisibleImageView.image = UIImage(named: (self.photoUser!.arrayValue[idPhoto + index]))
+        self.invisibleImageView.kf.setImage(with: URL(string: (self.photoUser!.arrayValue[idPhoto + index])))
         self.invisibleImageView.alpha = 1
         self.invisibleImageView.frame = self.bounds
         self.invisibleImageView.center.x = self.frame.midX
@@ -132,6 +132,11 @@ class OnePhoto: UIView, UIGestureRecognizerDelegate {
     
     func setPhoto(named: String) {
         visibleImageView.image = UIImage(named: named)
+    }
+    
+    func setPhoto(url: URL) {
+        visibleImageView.kf.setImage(with: url)
+        setNeedsDisplay()
     }
     
     override func draw(_ rect: CGRect) {

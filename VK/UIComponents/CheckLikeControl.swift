@@ -19,4 +19,7 @@ class CheckLikeControl: UIControl {
         self.addSubview(checkLike)
     }
     
+    func setCountLikes(count: Int) {
+        checkLike.setCountLike(count: count)
+    }
 }

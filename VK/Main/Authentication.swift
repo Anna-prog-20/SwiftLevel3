@@ -70,20 +70,29 @@ extension Authentication: WKNavigationDelegate {
         
         guard let token = params["access_token"],
               let userIdString = params["user_id"],
-              let userId = Int(userIdString)
+              let _ = Int(userIdString)
         else {
             decisionHandler(.allow)
             return
         }
+        
+        Session.inctance.token = token
+        Session.inctance.userId = Int(userIdString)!
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "home")
         self.navigationController?.pushViewController(viewController, animated: true)
         self.present(viewController, animated: true)
         
-        Session.inctance.token = token
-        Session.inctance.userId = userId
+        //NetworkManager.loadGroups(token: token)
+//        NetworkManager.loadGroupsByName(token: token, searchName: "programming Swift")
+//        NetworkManager.loadFriends(token: token)
+//        NetworkManager.loadFriendsByName(token: token, searchName: "Анна")
+//        NetworkManager.loadPhotos(token: token, idFriend: Int(userIdString)!)
+ //       NetworkManager.loadPhotos(token: token, idFriend: 780128)
+//        NetworkManager.loadUsersByName(token: token, searchName: "Палка")
         
+       
         decisionHandler(.cancel)
        
     }

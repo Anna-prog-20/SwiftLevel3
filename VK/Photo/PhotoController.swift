@@ -3,32 +3,37 @@ import UIKit
 class PhotoController: UICollectionViewController {
     
     private var idFriend: Int = 0
-    var namePhotos = [String]()
+    private var networkManager = NetworkManager(token: Session.inctance.token)
+    var photos: [Photo]?
+    var photosUrl: [String] = []
     
-    var photoUser = PhotoUser()
+    var albums: [Album]?
+    
+    func fillData() {
+        networkManager.loadAlbums(idFriend: idFriend, completion: {
+            [weak self] result in
+            switch result {
+            case let .failure(error):
+                print(error)
+            case let .success(albums1):
+                if ((self!.albums?.elementsEqual(albums1, by: {$0.id == $1.id})) == nil) {
+                    self!.albums = albums1
+                    self!.albums?.forEach({self!.photosUrl.append($0.thumbSrc)})
+                    self!.collectionView.reloadData()
+                }
+            }
+        })
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        NetworkManager.loadPhotos(token: Session.inctance.token, idFriend: Session.inctance.userId)
-        NetworkManager.loadPhotos(token: Session.inctance.token, idFriend: 780128)
-        
-        namePhotos.append("\(idFriend as Int)")
-        var i = 0
-        var namePhoto: String = ""
-        while true {
-            namePhoto = "\(idFriend as Int)-\(i)"
-            if UIImage(named: namePhoto) != nil {
-                namePhotos.append(namePhoto)
-                print(namePhoto)
-                i += 1
-            }
-            else {
-                break
-            }
-    }
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fillData()
+    }
+    
     func setIdFriend(idFriend: Int) {
         self.idFriend = idFriend
     }
@@ -51,16 +56,12 @@ class PhotoController: UICollectionViewController {
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return namePhotos.count
+        return photosUrl.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photo", for: indexPath) as! PhotoCell
-        
-        if !namePhotos[indexPath.row].contains("-") {
-            cell.contentView.backgroundColor = UIColor.yellow
-        }
-        cell.photo.image = UIImage(named: namePhotos[indexPath.row])
+        cell.photo.kf.setImage(with: URL(string: photosUrl[indexPath.row])!)
         return cell
     }
 
@@ -94,16 +95,25 @@ class PhotoController: UICollectionViewController {
 //    }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        photoUser.presentValueId  = indexPath.row
-        photoUser.arrayValue = namePhotos
-        let onePhotoController = self.storyboard?.instantiateViewController(withIdentifier: "OnePhotoController") as! OnePhotoController
-        onePhotoController.photoUser = photoUser
-        navigationController?.pushViewController(onePhotoController, animated: true)
-        //show(onePhotoController, sender: self)
-        //segueOnePhoto.photoUser = photoUser
-        //print("рисуем нажали")
+        
+        networkManager.loadPhotosByAlbum(idFriend: idFriend, idAlbum: albums![indexPath.row].id, completion: {
+            [weak self] result in
+            switch result {
+            case let .failure(error):
+                print(error)
+            case let .success(photos1):
+                //let photos1 = photos1
+                var photoUser = PhotoUser()
+                photoUser.presentValueId  = 0
+                if (photos1.count > 0) {
+                    photos1.forEach({photoUser.arrayValue.append($0.sizes[2].url)})
+                    
+                    let onePhotoController = self!.storyboard?.instantiateViewController(withIdentifier: "OnePhotoController") as! OnePhotoController
+                    onePhotoController.photoUser = photoUser
+                    
+                    self!.navigationController?.pushViewController(onePhotoController, animated: true)
+                }
+            }
+        })
     }
-
-    
-
 }

@@ -5,11 +5,11 @@ class NewsController: UITableViewController {
     var news: [News] = []
     
     func fillData() {
-        for i in 0...2 {
-            let user = User.init(id:i, name: "User \(i)", photo: [Photo(id: 0, name: "\(i)", checkFaceImage: false, title: "", date: Date())])
-            let new = News(id: i, user: user, title: "Новость дня \(i)", text: "\(user.name) каким-то чудом попал в сегодняшние новости!!!!", photo: [Photo(id: 0, name: "news-\(i)", checkFaceImage: false, title: "", date: Date())])
-            news.append(new)
-        }
+//        for i in 0...2 {
+//            let user = UserOld.init(id:i, name: "User \(i)", photo: [PhotoOld(id: 0, name: "\(i)", checkFaceImage: false, title: "", date: Date())])
+//            let new = News(id: i, user: user, title: "Новость дня \(i)", text: "\(user.name) каким-то чудом попал в сегодняшние новости!!!!", photo: [PhotoOld(id: 0, name: "news-\(i)", checkFaceImage: false, title: "", date: Date())])
+//            news.append(new)
+//        }
     }
     
     override func viewDidLoad() {
@@ -33,11 +33,11 @@ class NewsController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! NewsCell
-        let new = news[indexPath.row]
-        cell.faceImage.setImage(named: "\(new.user.photo[0].name)")
-        cell.nameUser.text = new.user.name
-        cell.textNew.text = new.text
-        cell.photoNew.image = UIImage(named: new.photo[0].name)
+//        let new = news[indexPath.row]
+//        cell.faceImage.setImage(named: "\(new.user.photo[0].name)")
+//        cell.nameUser.text = new.user.name
+//        cell.textNew.text = new.text
+//        cell.photoNew.image = UIImage(named: new.photo[0].name)
         return cell
     }
     

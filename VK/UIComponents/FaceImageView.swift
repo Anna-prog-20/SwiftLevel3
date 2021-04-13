@@ -39,6 +39,11 @@ class FaceImageView: UIView {
         setNeedsDisplay()
     }
     
+    func setImage(url: URL) {
+        faceImage.kf.setImage(with: url)
+        setNeedsDisplay()
+    }
+    
     @objc func tapImage() {
         let widthImage = self.bounds.width
         UIView.animate(withDuration: 0.4, animations: {
