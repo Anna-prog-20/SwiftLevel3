@@ -280,6 +280,7 @@
 				959536A425690C9700284745 /* CustomNavigationViewController.swift */,
 				959536AA25695AB500284745 /* CustomPopAnimator.swift */,
 				950067A8256A2FC800DD5BF5 /* CustomInteractiveTransition.swift */,
+				95A2E78C25D254BF0048F3BF /* Session.swift */,
 			);
 			path = UIComponents;
 			sourceTree = "<group>";
