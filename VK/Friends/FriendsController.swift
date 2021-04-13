@@ -28,7 +28,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     func fillData() {
         friendsName.sort()
         for i in 0...friendsName.count - 1 {
-            let user = User(id: i, name: friendsName[i])
+            let user = User(id: i, name: friendsName[i],login: "\(friendsName[i])@mail.ru", password: "\(friendsName[i])")
             friends.append(user)
         }
     }
@@ -36,6 +36,11 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     override func viewDidLoad() {
         tableFriends.dataSource = self
         searchFriend.delegate = self
+        
+        NetworkManager.loadFriends(token: Session.inctance.token)
+        NetworkManager.loadFriendsByName(token: Session.inctance.token, searchName: "Анна")
+        NetworkManager.loadUsersByName(token: Session.inctance.token, searchName: "Палка")
+        
         
         fillData()
         filteredData = friends
@@ -45,6 +50,24 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         symbolControl = SymbolControl.init(frame: CGRect(x: view.frame.maxX - 20, y: 0, width: 20, height: view.frame.height),groupSymbol: groupSymbol)
         symbolControl.viewController = self
         symbolControl.isUserInteractionEnabled = true
+        
+        let userAuth = Session.inctance
+        userAuth.getData()
+        //message(name: searchUserName(userId: userAuth.userId))
+    }
+    
+    func searchUserName(userId: Int) -> String {
+        let searchUser = friends.filter{
+            $0.id == userId
+        }
+        return searchUser[0].name
+    }
+    
+    func message(name: String) {
+        let alert = UIAlertController(title: "Вход", message: "Поздравляем \(name)! Вы вошли в свой аккаунт! ", preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {

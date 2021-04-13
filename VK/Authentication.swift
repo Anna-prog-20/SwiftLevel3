@@ -1,20 +1,11 @@
 import UIKit
+import WebKit
 
 class Authentication: UIViewController {
 
-    //var indicatorView: IndicatorView!
-    @IBOutlet weak var login: UITextField!
-    @IBOutlet weak var password: UITextField!
-    @IBOutlet weak var scrollView: UIScrollView!
-    
-    @IBAction func comeIn(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "home")
-        if authentication(login: login.text, password: password.text) {
-            self.navigationController?.pushViewController(viewController, animated: true)
-        }
-        else {
-            messageError()
+    @IBOutlet weak var webView: WKWebView!{
+        didSet {
+            webView.navigationDelegate = self
         }
     }
     
@@ -25,61 +16,76 @@ class Authentication: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    func authentication(login: String?, password: String?) -> Bool {
-        if login != nil && password != nil {
-            if !login!.isEmpty || !password!.isEmpty {
-                return true
-            }
-        }
-        return false
-    }
-    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        // Жест нажатия
-        let hideKeyboardGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        // Присваиваем его UIScrollVIew
-        scrollView?.addGestureRecognizer(hideKeyboardGesture)
-    }
-
-    // Когда клавиатура появляется
-    @objc func keyboardWasShown(notification: Notification) {
-            
-        // Получаем размер клавиатуры
-        let info = notification.userInfo! as NSDictionary
-        let kbSize = (info.value(forKey: UIResponder.keyboardFrameEndUserInfoKey) as! NSValue).cgRectValue.size
-        let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: kbSize.height, right: 0.0)
-            
-        // Добавляем отступ внизу UIScrollView, равный размеру клавиатуры
-        self.scrollView?.contentInset = contentInsets
-            scrollView?.scrollIndicatorInsets = contentInsets
-    }
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "oauth.vk.com"
+        components.path = "/authorize"
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: "7763625"),
+            URLQueryItem(name: "scope", value: "262150"),
+            URLQueryItem(name: "display", value: "mobile"),
+            URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
+            URLQueryItem(name: "response_type", value: "token"),
+            URLQueryItem(name: "v", value: "5.92")
+        ]
         
-    //Когда клавиатура исчезает
-    @objc func keyboardWillBeHidden(notification: Notification) {
-        // Устанавливаем отступ внизу UIScrollView, равный 0
-        let contentInsets = UIEdgeInsets.zero
-        scrollView?.contentInset = contentInsets
+        let request = URLRequest(url: components.url!)
+        webView.load(request)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-            
-        // Подписываемся на два уведомления: одно приходит при появлении клавиатуры
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
-        // Второе — когда она пропадает
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillBeHidden(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-            
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    @objc func hideKeyboard() {
-        self.scrollView?.endEditing(true)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+extension Authentication: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        guard let url = navigationResponse.response.url,
+              url.path == "/blank.html",
+              let fragment = url.fragment else {
+            decisionHandler(.allow)
+            return
+        }
+        
+        let params = fragment
+            .components(separatedBy: "&")
+            .map { $0.components(separatedBy: "=") }
+            .reduce([String: String]()) { result, param in
+                var dict = result
+                let key = param[0]
+                let value = param[1]
+                dict[key] = value
+                
+                return dict
+            }
+        
+        guard let token = params["access_token"],
+              let userIdString = params["user_id"],
+              let userId = Int(userIdString)
+        else {
+            decisionHandler(.allow)
+            return
+        }
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "home")
+        self.navigationController?.pushViewController(viewController, animated: true)
+        self.present(viewController, animated: true)
+        
+        Session.inctance.token = token
+        Session.inctance.userId = userId
+        
+        decisionHandler(.cancel)
+       
     }
 }
 

@@ -9,6 +9,10 @@ class PhotoController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NetworkManager.loadPhotos(token: Session.inctance.token, idFriend: Session.inctance.userId)
+        NetworkManager.loadPhotos(token: Session.inctance.token, idFriend: 780128)
+        
         namePhotos.append("\(idFriend as Int)")
         var i = 0
         var namePhoto: String = ""
