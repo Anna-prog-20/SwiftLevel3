@@ -7,134 +7,246 @@
 
 import Foundation
 import Alamofire
+import SwiftyJSON
+import RealmSwift
 
 class NetworkManager {
     
-    private static let sessionAF: Alamofire.Session = {
-        let configuration = URLSessionConfiguration.default
-        configuration.allowsCellularAccess = false
-        let session = Alamofire.Session(configuration: configuration)
-        
-        return session
-    }()
+    private let baseURL = "https://api.vk.com"
+    private let token: String
     
-    
-    static let shared = NetworkManager()
-    
-    private init() {
-        
+    private var baseParams: Parameters {
+        [
+            "access_token": token,
+            "extended": 1,
+            "v": "5.130"
+        ]
     }
     
-    static func loadGroups(token: String) {
-        let baseURL = "https://api.vk.com"
+    public init(token: String) {
+        self.token = token
+    }
+    
+    private func saveData(_ data: [RealmSwift.Object]) {
+        do {
+            let realm = try Realm()
+            realm.beginWrite()
+            realm.add(data)
+            try realm.commitWrite()
+        } catch  {
+            print(error)
+        }
+    }
+    
+    public func loadGroups(allGroups: Int = 0, completion: @escaping (Result<[Group], Error>) -> Void) {
         let path = "/method/groups.get"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "v": "5.92"
-        ]
+        let params = baseParams
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([Group].self, from: data)
+                self.saveData(dataResult)
+                completion(.success(dataResult))
+            }
             
-            print("Groups")
-            print(json)
         }
     }
     
-    static func loadGroupsByName(token: String, searchName: String) {
-        let baseURL = "https://api.vk.com"
+    public func loadGroupsByName(searchName: String,  completion: @escaping (Result<[Group], Error>) -> Void) {
         let path = "/method/groups.search"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "q": searchName,
-            "v": "5.92"
-        ]
+        var params = baseParams
+        params["q"] = searchName
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
-            
-            print("Groups by name")
-            print(json)
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([Group].self, from: data)
+                completion(.success(dataResult))
+            }
         }
     }
     
-    static func loadFriends(token: String) {
-        let baseURL = "https://api.vk.com"
+    public func loadFriends(completion: @escaping (Result<[User], Error>) -> Void) {
         let path = "/method/friends.get"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "v": "5.92"
-        ]
+        var params = baseParams
+        params["fields"] = ["nickname","photo_100"]
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
-            
-            print("Friends")
-            print(json)
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                self.saveData(dataResult)
+                completion(.success(dataResult))
+            }
         }
     }
     
-    static func loadFriendsByName(token: String, searchName: String) {
-        let baseURL = "https://api.vk.com"
+    public func loadFriendsByName(searchName: String, completion: @escaping (Result<[User], Error>) -> Void) {
         let path = "/method/friends.search"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "q": searchName,
-            "v": "5.92"
-        ]
+        var params = baseParams
+        params["q"] = searchName
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
-            
-            print("Friends by name")
-            print(json)
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                self.saveData(dataResult)
+                completion(.success(dataResult))
+            }
         }
     }
     
-    static func loadUsersByName(token: String, searchName: String) {
-        let baseURL = "https://api.vk.com"
+    public func loadUsersByName(searchName: String,  completion: @escaping (Result<[User], Error>) -> Void) {
         let path = "/method/users.search"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "q": searchName,
-            "v": "5.92"
-        ]
+        var params = baseParams
+        params["q"] = searchName
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                completion(.success(dataResult))
+            }
             
-            print("Users by name")
-            print(json)
         }
     }
     
-    static func loadPhotos(token: String, idFriend: Int) {
-        let baseURL = "https://api.vk.com"
+    public func loadFriendsByNameCurrentUser(idCurrentUser: Int, searchName: String,  completion: @escaping (Result<[User], Error>) -> Void) {
+        let path = "/method/friends.search"
+        
+        var params = baseParams
+        params["user_id"] = idCurrentUser
+        params["fields"] = ["photo_100"]
+        params["q"] = searchName
+        
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                completion(.success(dataResult))
+            }
+            
+        }
+    }
+    
+    public func loadPhotos(idFriend: Int,  completion: @escaping (Result<[Photo], Error>) -> Void) {
         let path = "/method/photos.get"
         
-        let params: Parameters = [
-            "access_token": token,
-            "extended": 1,
-            "owner_id": idFriend,
-            "album_id": "profile",
-            "v": "5.92"
-        ]
+        var params = baseParams
+        params["owner_id"] = idFriend
+        params["album_id"] = "profile"
         
-        NetworkManager.sessionAF.request(baseURL + path, method: .get, parameters: params).responseJSON { (response) in
-            guard let json = response.value else { return }
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([Photo].self, from: data)
+                completion(.success(dataResult))
+            }
             
-            print("Photos")
-            print(json)
+        }
+    }
+    
+    public func loadAllPhotos(idFriend: Int,  completion: @escaping (Result<[Photo], Error>) -> Void) {
+        let path = "/method/photos.getAll"
+        
+        var params = baseParams
+        params["owner_id"] = idFriend
+        params["no_service_albums"] = 1
+        
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([Photo].self, from: data)
+                completion(.success(dataResult))
+            }
+            
+        }
+    }
+    
+    public func loadPhotosByAlbum(idFriend: Int, idAlbum: Int,  completion: @escaping (Result<[Photo], Error>) -> Void) {
+        let path = "/method/photos.get"
+        
+        var params = baseParams
+        params["owner_id"] = idFriend
+        params["album_id"] = idAlbum
+        params["no_service_albums"] = 1
+        params["rev"] = 0
+        
+        if idAlbum != -9000 {
+            AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+                switch response.result {
+                case .failure(let error):
+                    completion(.failure(error))
+                case .success( _):
+                    guard let json = response.value.map(JSON.init) else { return }
+                    let data = try! json["response"]["items"].rawData()
+                    let dataResult = try! JSONDecoder().decode([Photo].self, from: data)
+                    completion(.success(dataResult))
+                }
+                
+            }
+        }
+    }
+    
+    public func loadAlbums(idFriend: Int,  completion: @escaping (Result<[Album], Error>) -> Void) {
+        let baseURL = "https://api.vk.com"
+        let path = "/method/photos.getAlbums"
+        
+        var params = baseParams
+        params["owner_id"] = idFriend
+        params["need_covers"] = 1
+        params["need_system"] = 1
+        
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([Album].self, from: data)
+                completion(.success(dataResult))
+            }
+            
         }
     }
 }
+

@@ -2,11 +2,22 @@ import UIKit
 import WebKit
 
 class Authentication: UIViewController {
-
+    
     @IBOutlet weak var webView: WKWebView!{
         didSet {
             webView.navigationDelegate = self
         }
+    }
+    
+    @IBAction func unwindAndClearCoockies(segue: UIStoryboardSegue) {
+        let coockieStore = webView.configuration.websiteDataStore.httpCookieStore
+        coockieStore.getAllCookies {
+            coocies in
+            for coocke in coocies {
+                coockieStore.delete(coocke)
+            }
+        }
+        webView.load(buildAuthRequest())
     }
     
     func messageError() {
@@ -16,7 +27,7 @@ class Authentication: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    override func viewDidLoad() {
+    private func buildAuthRequest() -> URLRequest {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "oauth.vk.com"
@@ -30,14 +41,17 @@ class Authentication: UIViewController {
             URLQueryItem(name: "v", value: "5.92")
         ]
         
-        let request = URLRequest(url: components.url!)
-        webView.load(request)
+        return URLRequest(url: components.url!)
+    }
+    
+    override func viewDidLoad() {
+        webView.load(buildAuthRequest())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
@@ -70,22 +84,22 @@ extension Authentication: WKNavigationDelegate {
         
         guard let token = params["access_token"],
               let userIdString = params["user_id"],
-              let userId = Int(userIdString)
+              let _ = Int(userIdString)
         else {
             decisionHandler(.allow)
             return
         }
+        
+        Session.inctance.token = token
+        Session.inctance.userId = Int(userIdString)!
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "home")
         self.navigationController?.pushViewController(viewController, animated: true)
         self.present(viewController, animated: true)
         
-        Session.inctance.token = token
-        Session.inctance.userId = userId
-        
         decisionHandler(.cancel)
-       
+        
     }
 }
 
