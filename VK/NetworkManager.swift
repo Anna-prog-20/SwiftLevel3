@@ -8,6 +8,7 @@
 import Foundation
 import Alamofire
 import SwiftyJSON
+import RealmSwift
 
 class NetworkManager {
     
@@ -26,6 +27,17 @@ class NetworkManager {
         self.token = token
     }
     
+    private func saveData(_ data: [RealmSwift.Object]) {
+        do {
+            let realm = try Realm()
+            realm.beginWrite()
+            realm.add(data)
+            try realm.commitWrite()
+        } catch  {
+            print(error)
+        }
+    }
+    
     public func loadGroups(allGroups: Int = 0, completion: @escaping (Result<[Group], Error>) -> Void) {
         let path = "/method/groups.get"
         
@@ -39,6 +51,7 @@ class NetworkManager {
                 guard let json = response.value.map(JSON.init) else { return }
                 let data = try! json["response"]["items"].rawData()
                 let dataResult = try! JSONDecoder().decode([Group].self, from: data)
+                self.saveData(dataResult)
                 completion(.success(dataResult))
             }
             
@@ -78,6 +91,7 @@ class NetworkManager {
                 guard let json = response.value.map(JSON.init) else { return }
                 let data = try! json["response"]["items"].rawData()
                 let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                self.saveData(dataResult)
                 completion(.success(dataResult))
             }
         }
@@ -97,12 +111,13 @@ class NetworkManager {
                 guard let json = response.value.map(JSON.init) else { return }
                 let data = try! json["response"]["items"].rawData()
                 let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                self.saveData(dataResult)
                 completion(.success(dataResult))
             }
         }
     }
     
-    public func loadUsersByName(searchName: String, completion: @escaping (Result<[User], Error>) -> Void) {
+    public func loadUsersByName(searchName: String,  completion: @escaping (Result<[User], Error>) -> Void) {
         let path = "/method/users.search"
         
         var params = baseParams
@@ -118,6 +133,29 @@ class NetworkManager {
                 let dataResult = try! JSONDecoder().decode([User].self, from: data)
                 completion(.success(dataResult))
             }
+            
+        }
+    }
+    
+    public func loadFriendsByNameCurrentUser(idCurrentUser: Int, searchName: String,  completion: @escaping (Result<[User], Error>) -> Void) {
+        let path = "/method/friends.search"
+        
+        var params = baseParams
+        params["user_id"] = idCurrentUser
+        params["fields"] = ["photo_100"]
+        params["q"] = searchName
+        
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
+            switch response.result {
+            case .failure(let error):
+                completion(.failure(error))
+            case .success( _):
+                guard let json = response.value.map(JSON.init) else { return }
+                let data = try! json["response"]["items"].rawData()
+                let dataResult = try! JSONDecoder().decode([User].self, from: data)
+                completion(.success(dataResult))
+            }
+            
         }
     }
     
@@ -170,6 +208,7 @@ class NetworkManager {
         params["owner_id"] = idFriend
         params["album_id"] = idAlbum
         params["no_service_albums"] = 1
+        params["rev"] = 0
         
         if idAlbum != -9000 {
             AF.request(baseURL + path, method: .get, parameters: params).responseData { response in
@@ -188,6 +227,7 @@ class NetworkManager {
     }
     
     public func loadAlbums(idFriend: Int,  completion: @escaping (Result<[Album], Error>) -> Void) {
+        let baseURL = "https://api.vk.com"
         let path = "/method/photos.getAlbums"
         
         var params = baseParams

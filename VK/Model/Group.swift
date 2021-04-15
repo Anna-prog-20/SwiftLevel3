@@ -1,13 +1,19 @@
 import Foundation
+import RealmSwift
 
-struct Group: Decodable {
-    let id: Int?
-    let name, screenName: String?
-    let isClosed: Int?
-    let type: String?
-    let isAdmin, isMember, isAdvertiser: Int?
-    let photo50, photo100, photo200: String?
-
+class Group: RealmSwift.Object, Decodable {
+    @objc dynamic var id: Int = 0
+    @objc dynamic var name: String = ""
+    @objc dynamic var screenName: String = ""
+    @objc dynamic var isClosed: Int = 0
+    @objc dynamic var type: String = ""
+    @objc dynamic var isAdmin: Int = 0
+    @objc dynamic var isMember: Int = 0
+    @objc dynamic var isAdvertiser: Int = 0
+    @objc dynamic var photo50: String = ""
+    @objc dynamic var photo100: String = ""
+    @objc dynamic var photo200: String = ""
+    
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -22,7 +28,7 @@ struct Group: Decodable {
         case photo200 = "photo_200"
     }
     
-    init(from decoder: Decoder) throws {
+    required convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         let id = try container.decode(Int.self, forKey: .id)
@@ -42,8 +48,10 @@ struct Group: Decodable {
         self.init(id: stringId, name: name, screenName: screenName, isClosed : isClosed, type: type, isAdmin: isAdmin, isMember: isMember, isAdvertiser: isAdvertiser, photo50: photo50, photo100: photo100, photo200: photo200 )
     }
     
-    init(id: String, name: String, screenName: String, isClosed : Int, type: String, isAdmin: Int, isMember: Int, isAdvertiser: Int, photo50: String, photo100: String, photo200: String) {
-        self.id = Int(id)
+    convenience init(id: String, name: String, screenName: String, isClosed : Int, type: String, isAdmin: Int, isMember: Int, isAdvertiser: Int, photo50: String, photo100: String, photo200: String) {
+        self.init()
+        
+        self.id = Int(id)!
         self.name = name
         self.screenName = screenName
         self.isClosed = isClosed

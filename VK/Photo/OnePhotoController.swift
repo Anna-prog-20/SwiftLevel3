@@ -1,7 +1,7 @@
 import UIKit
 
 class OnePhotoController: UIViewController, UIGestureRecognizerDelegate {
-
+    
     @IBOutlet weak var photo: OnePhoto!
     
     var photoUser: PhotoUser?
@@ -22,5 +22,5 @@ class OnePhotoController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-
+    
 }
