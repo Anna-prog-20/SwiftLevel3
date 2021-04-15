@@ -2,11 +2,22 @@ import UIKit
 import WebKit
 
 class Authentication: UIViewController {
-
+    
     @IBOutlet weak var webView: WKWebView!{
         didSet {
             webView.navigationDelegate = self
         }
+    }
+    
+    @IBAction func unwindAndClearCoockies(segue: UIStoryboardSegue) {
+        let coockieStore = webView.configuration.websiteDataStore.httpCookieStore
+        coockieStore.getAllCookies {
+            coocies in
+            for coocke in coocies {
+                coockieStore.delete(coocke)
+            }
+        }
+        webView.load(buildAuthRequest())
     }
     
     func messageError() {
@@ -16,7 +27,7 @@ class Authentication: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    override func viewDidLoad() {
+    private func buildAuthRequest() -> URLRequest {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "oauth.vk.com"
@@ -24,20 +35,25 @@ class Authentication: UIViewController {
         components.queryItems = [
             URLQueryItem(name: "client_id", value: "7763625"),
             URLQueryItem(name: "scope", value: "262150"),
+            //URLQueryItem(name: "scope", value: "friends,photos,groups,stories"),
             URLQueryItem(name: "display", value: "mobile"),
             URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
             URLQueryItem(name: "response_type", value: "token"),
-            URLQueryItem(name: "v", value: "5.92")
+            URLQueryItem(name: "v", value: "5.130")
         ]
         
-        let request = URLRequest(url: components.url!)
-        webView.load(request)
+        return URLRequest(url: components.url!)
+    }
+    
+    override func viewDidLoad() {
+        RealmBase.inctance.startRealmBase()
+        webView.load(buildAuthRequest())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
@@ -84,17 +100,8 @@ extension Authentication: WKNavigationDelegate {
         self.navigationController?.pushViewController(viewController, animated: true)
         self.present(viewController, animated: true)
         
-        //NetworkManager.loadGroups(token: token)
-//        NetworkManager.loadGroupsByName(token: token, searchName: "programming Swift")
-//        NetworkManager.loadFriends(token: token)
-//        NetworkManager.loadFriendsByName(token: token, searchName: "Анна")
-//        NetworkManager.loadPhotos(token: token, idFriend: Int(userIdString)!)
- //       NetworkManager.loadPhotos(token: token, idFriend: 780128)
-//        NetworkManager.loadUsersByName(token: token, searchName: "Палка")
-        
-       
         decisionHandler(.cancel)
-       
+        
     }
 }
 

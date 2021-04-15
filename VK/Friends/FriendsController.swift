@@ -1,32 +1,34 @@
 import UIKit
+import RealmSwift
 
 class FriendsController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet var tableFriends: UITableView!
     @IBOutlet weak var searchFriend: UISearchBar!
     
+    @IBAction func LogOut(_ sender: UIBarButtonItem) {
+    }
     private var networkManager = NetworkManager(token: Session.inctance.token)
-    var symbolControl: SymbolControl!
-    var friends: [User] = []
-    var groupSymbol: [GroupSymbol] = []
-    var filteredData: [User]!
-    
+    private var realm: Realm = RealmBase.inctance.getRealm()!
+    private var symbolControl: SymbolControl!
+    private var friends: [User] = []
+    private var groupSymbol: [GroupSymbol] = []
+    private var searchText: String = ""
     private var idFriend: Int!
     private let headerID = String(describing: HeaderSection.self)
     
     func fillData() {
        networkManager.loadFriends(completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
-                print(error)
-            case let .success(users):
-                self!.friends = users
-                self!.friends.sort(by: {$0.lastName<$1.lastName})
-                self!.filteredData = self!.friends
-                self!.writeGroupFriend()
-                self!.tableFriends.reloadData()
-            }
+        [weak self] in
+                do {
+                    let realm = try Realm()
+                    let friends = realm.objects(User.self).sorted(byKeyPath: "lastName")
+                    self!.friends = Array(friends)
+                    self!.writeGroupFriend()
+                    self!.tableFriends.reloadData()
+                } catch {
+                    print(error)
+                }
         })
     }
     
@@ -42,13 +44,6 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         symbolControl = SymbolControl.init(frame: CGRect(x: view.frame.maxX - 20, y: 0, width: 20, height: view.frame.height),groupSymbol: groupSymbol)
         symbolControl.viewController = self
         symbolControl.isUserInteractionEnabled = true
-    }
-    
-    func searchUserName(userId: Int) -> String {
-        let searchUser = friends.filter{
-            $0.id == userId
-        }
-        return searchUser[0].firstName
     }
     
     func message(name: String) {
@@ -79,7 +74,9 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         var i = 0
         var k = 0
         var firstSymbol = ""
-        for friend in filteredData {
+        groupSymbol = []
+        
+        for friend in friends {
             let nameFriend = "\(friend.lastName) \(friend.firstName)"
             let friendSymbol = String(nameFriend[nameFriend.startIndex])
             if firstSymbol != friendSymbol {
@@ -133,14 +130,13 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredData = searchText.isEmpty ? friends : friends.filter({
-            (item: User) -> Bool in
-            return item.firstName.range(of: searchText, options: .caseInsensitive) != nil || item.lastName.range(of: searchText, options: .caseInsensitive) != nil
-        })
-        groupSymbol = []
+        var request = realm.objects(User.self).sorted(byKeyPath: "lastName")
+        if searchText != "" && !searchText.elementsEqual(self.searchText) {
+            self.searchText = searchText
+            request = realm.objects(User.self).filter("lastName CONTAINS '\(searchText)' OR firstName CONTAINS '\(searchText)'").sorted(byKeyPath: "lastName")
+        }
+        friends = Array(request)
         writeGroupFriend()
         tableFriends.reloadData()
     }
-    
 }
-
