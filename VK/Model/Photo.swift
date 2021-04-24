@@ -1,15 +1,18 @@
 import Foundation
 import RealmSwift
 
+@objcMembers
 class Photo: RealmSwift.Object, Decodable {
-    @objc dynamic var albumID: Int = 0
-    @objc dynamic var date: Int = 0
-    @objc dynamic var id: Int = 0
-    @objc dynamic var ownerID: Int = 0
-    @objc dynamic var hasTags: Bool = true
-    var sizes: [Size]?
-    @objc dynamic var text: String = ""
+    dynamic var albumID: Int = 0
+    dynamic var date: Int = 0
+    dynamic var id: Int = 0
+    dynamic var ownerID: Int = 0
+    dynamic var hasTags: Bool = true
+    dynamic var sizes: [Size]?
+    dynamic var text: String = ""
     var likes: Likes?
+    
+    var sizesList = List<Size>()
     
     enum CodingKeys: String, CodingKey {
         case albumID = "album_id"
@@ -32,14 +35,26 @@ class Photo: RealmSwift.Object, Decodable {
         self.sizes = try! container!.decode([Size].self, forKey: .sizes)
         self.text = try! container!.decode(String.self, forKey: .text)
         self.likes = try! container!.decode(Likes.self, forKey: .likes)
+        
+        self.sizesList.append(objectsIn: sizes!)
+    }
+    
+    override class func primaryKey() -> String? {
+        return "id"
+    }
+    override class func ignoredProperties() -> [String] {
+        return ["sizes"]
     }
 }
 
+@objcMembers
 class Size: RealmSwift.Object, Decodable {
-    @objc dynamic var height: Int = 0
-    @objc dynamic var url: String = ""
-    @objc dynamic var type: String = ""
-    @objc dynamic var width: Int = 0
+    dynamic var height: Int = 0
+    dynamic var url: String = ""
+    dynamic var type: String = ""
+    dynamic var width: Int = 0
+    
+    dynamic var owners = LinkingObjects(fromType: Photo.self, property: "sizesList")
     
     enum CodingKeys: String, CodingKey {
         case height, url, type, width
@@ -52,5 +67,9 @@ class Size: RealmSwift.Object, Decodable {
         self.url = try! container!.decode(String.self, forKey: .url)
         self.type = try! container!.decode(String.self, forKey: .type)
         self.width = try! container!.decode(Int.self, forKey: .width)
+    }
+    
+    override class func primaryKey() -> String? {
+        return "url"
     }
 }

@@ -1,10 +1,13 @@
 import UIKit
 import Kingfisher
+import RealmSwift
 
 class MyGroupsController: UITableViewController, DelegateGroup {
     
     private var networkManager = NetworkManager(token: Session.inctance.token)
-    var groups: [Group]?
+    private var realm: Realm = RealmBase.inctance.getRealm()!
+    private lazy var groupsResult: Results<Group>? = realm.objects(Group.self).sorted(byKeyPath: "name")
+    private var notificationToken: NotificationToken?
     
     @IBAction func addGroup(_ sender: Any) {
         let groupsController = self.storyboard?.instantiateViewController(withIdentifier: "GroupsController") as! GroupsController
@@ -12,48 +15,43 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     }
     
     func update(group: Group) {
-        let groupFilter = self.groups!.filter({
-            (item: Group) -> Bool in
-            return item.name.range(of: group.name , options: .caseInsensitive) != nil
-        })
-        if groupFilter.count <= 0 {
-            self.groups!.append(group)
-        }
-    }
-    
-    func fillData() {
-        networkManager.loadGroups(allGroups: 0, completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
-                print(error)
-            case let .success(groups1):
-                if ((self!.groups?.elementsEqual(groups1, by: {$0.id == $1.id})) == nil) {
-                    self!.groups = groups1
-                    self!.tableView.reloadData()
-                }
-            }
-        })
+//        let groupFilter = self.groups!.filter({
+//            (item: Group) -> Bool in
+//            return item.name.range(of: group.name , options: .caseInsensitive) != nil
+//        })
+//        if groupFilter.count <= 0 {
+//            self.groups!.append(group)
+//        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Group", for: indexPath) as! MyGroupsCell
         
-        let group = groups![indexPath.row]
-        cell.nameGroup.text = group.name
-        
-        cell.faceImage.setImage(url: URL(string: group.photo50)!)
+        let group = groupsResult?[indexPath.row]
+        cell.nameGroup.text = group?.name
+        cell.faceImage.setImage(url: URL(string: group!.photo50)!)
         
         return cell
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        networkManager.loadGroups {}
+        notificationToken = groupsResult!.observe { [weak self] (changes: RealmCollectionChange) in
+            guard let tableView = self?.tableView else {return}
+            switch changes {
+            case .initial:
+                tableView.reloadData()
+            case .update(let results, let deletions, let insertions, let modifications):
+                tableView.apply(delitions: deletions, insertions: insertions, modifications: modifications)
+            case .error(let error):
+                print(error)
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fillData()
     }
     // MARK: - Table view data source
     
@@ -62,7 +60,7 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groups?.count ?? 0
+        return groupsResult!.count
     }
     
     /*
@@ -81,10 +79,10 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     //    }
     //
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            groups!.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
+//        if editingStyle == .delete {
+//            groups!.remove(at: indexPath.row)
+//            tableView.deleteRows(at: [indexPath], with: .fade)
+//        }
     }
     
     //    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {

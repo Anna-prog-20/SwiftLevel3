@@ -17,6 +17,10 @@
 		950840CB254BFC8A003CE190 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950840CA254BFC8A003CE190 /* PhotoCell.swift */; };
 		951131CC25DAB85000CCEC96 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 951131CB25DAB85000CCEC96 /* WebKit.framework */; };
 		951131D425DC13CE00CCEC96 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951131D325DC13CE00CCEC96 /* NetworkManager.swift */; };
+		951524F5262534CD008AEBE0 /* RealmBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951524F4262534CD008AEBE0 /* RealmBase.swift */; };
+		951524FF26291BBE008AEBE0 /* ExtensionsUICollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951524FE26291BBE008AEBE0 /* ExtensionsUICollectionView.swift */; };
+		951525072629334C008AEBE0 /* ExtensionsUITableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951525062629334C008AEBE0 /* ExtensionsUITableView.swift */; };
+		9515250C26295820008AEBE0 /* SymbolGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9515250B26295820008AEBE0 /* SymbolGroup.swift */; };
 		95169D89256027600005987A /* NewsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95169D88256027600005987A /* NewsController.swift */; };
 		95169D92256029430005987A /* NewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95169D90256029430005987A /* NewsCell.swift */; };
 		95169D93256029430005987A /* NewsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95169D91256029430005987A /* NewsCell.xib */; };
@@ -91,6 +95,10 @@
 		950840CA254BFC8A003CE190 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		951131CB25DAB85000CCEC96 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		951131D325DC13CE00CCEC96 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		951524F4262534CD008AEBE0 /* RealmBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBase.swift; sourceTree = "<group>"; };
+		951524FE26291BBE008AEBE0 /* ExtensionsUICollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsUICollectionView.swift; sourceTree = "<group>"; };
+		951525062629334C008AEBE0 /* ExtensionsUITableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsUITableView.swift; sourceTree = "<group>"; };
+		9515250B26295820008AEBE0 /* SymbolGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolGroup.swift; sourceTree = "<group>"; };
 		95169D88256027600005987A /* NewsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsController.swift; sourceTree = "<group>"; };
 		95169D90256029430005987A /* NewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsCell.swift; sourceTree = "<group>"; };
 		95169D91256029430005987A /* NewsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewsCell.xib; sourceTree = "<group>"; };
@@ -179,6 +187,8 @@
 				95D026CD256CE0D700E94F0F /* DelegateGroup.swift */,
 				95FB44A2261597BE00E7F676 /* Album.swift */,
 				95FB44A72615A2C200E7F676 /* Likes.swift */,
+				951524F4262534CD008AEBE0 /* RealmBase.swift */,
+				9515250B26295820008AEBE0 /* SymbolGroup.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -212,6 +222,15 @@
 				95616AF325663975007801D9 /* PhotoUser.swift */,
 			);
 			path = Photo;
+			sourceTree = "<group>";
+		};
+		951524FD26291B86008AEBE0 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				951524FE26291BBE008AEBE0 /* ExtensionsUICollectionView.swift */,
+				951525062629334C008AEBE0 /* ExtensionsUITableView.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		95169D87256027240005987A /* News */ = {
@@ -255,6 +274,7 @@
 		959B93F22542A32E00F319EF /* VK */ = {
 			isa = PBXGroup;
 			children = (
+				951524FD26291B86008AEBE0 /* Extensions */,
 				95CE78D726118A7800ADA5A0 /* Main */,
 				95CE78D02611899200ADA5A0 /* UIComponents */,
 				95169D87256027240005987A /* News */,
@@ -473,8 +493,11 @@
 				95E54C222563A80D00419303 /* IndicatorView.swift in Sources */,
 				952D8CD7254C761600BA7780 /* MyGroupsController.swift in Sources */,
 				95E4383825524E3800A5F681 /* FaceImageView.swift in Sources */,
+				9515250C26295820008AEBE0 /* SymbolGroup.swift in Sources */,
 				952D8CDC254C762C00BA7780 /* MyGroupsCell.swift in Sources */,
+				951525072629334C008AEBE0 /* ExtensionsUITableView.swift in Sources */,
 				95312BA8256180F900F884F0 /* Share.swift in Sources */,
+				951524FF26291BBE008AEBE0 /* ExtensionsUICollectionView.swift in Sources */,
 				95D322CE2553008300C3670A /* CheckLikeControl.swift in Sources */,
 				950840AB254BE77C003CE190 /* Photo.swift in Sources */,
 				95E54C1A2563970900419303 /* Indicator.swift in Sources */,
@@ -493,6 +516,7 @@
 				959536A525690C9700284745 /* CustomNavigationViewController.swift in Sources */,
 				9508409E254BE255003CE190 /* User.swift in Sources */,
 				95FB44A82615A2C200E7F676 /* Likes.swift in Sources */,
+				951524F5262534CD008AEBE0 /* RealmBase.swift in Sources */,
 				95E4383D2552584400A5F681 /* FaceImage.swift in Sources */,
 				95840E18255C17C7008D3414 /* GroupSymbol.swift in Sources */,
 				95312B9425617D5900F884F0 /* CommentsControl.swift in Sources */,
@@ -833,7 +857,7 @@
 			repositoryURL = "https://github.com/realm/realm-cocoa.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 10.7.2;
+				minimumVersion = 10.7.3;
 			};
 		};
 		95CE78CA2611875700ADA5A0 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
