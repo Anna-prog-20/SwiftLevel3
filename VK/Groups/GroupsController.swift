@@ -41,7 +41,14 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        if let myDelegate = navigationController?.viewControllers[0] as? MyGroupsController {
+            delegate = myDelegate
+        }
+        
+        let group = groups[indexPath.row]
+        delegate?.update(group: group)
+        
+        navigationController?.popViewController(animated: true)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

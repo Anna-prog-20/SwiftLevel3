@@ -5,7 +5,6 @@ class OnePhotoController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var photo: OnePhoto!
     
     var photoUser: PhotoUser?
-    //var photoUser: Photo?
     
     override func viewDidLoad() {
         super.viewDidLoad()
