@@ -34,8 +34,7 @@ class Photo: RealmSwift.Object, Decodable {
         self.hasTags = try! container!.decode(Bool.self, forKey: .hasTags)
         self.sizes = try! container!.decode([Size].self, forKey: .sizes)
         self.text = try! container!.decode(String.self, forKey: .text)
-        self.likes = try! container!.decode(Likes.self, forKey: .likes)
-        
+        self.likes = try! container!.decodeIfPresent(Likes.self, forKey: .likes)
         self.sizesList.append(objectsIn: sizes!)
     }
     

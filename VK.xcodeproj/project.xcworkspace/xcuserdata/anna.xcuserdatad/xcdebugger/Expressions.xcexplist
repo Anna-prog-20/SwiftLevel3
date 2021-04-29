@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "FriendsController.tableView(_:numberOfRowsInSection:):FriendsController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "symbolGroup.count">
+            </PersistentString>
+            <PersistentString
+               value = "symbolGroup[section]">
+            </PersistentString>
+            <PersistentString
+               value = "friendsResult?.filter(&quot;lastName LIKE &apos;\(symbolGroup[section])*&apos;&quot;).count">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "FriendsController.tableView(_:cellForRowAt:):FriendsController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "indexPath.row">
+            </PersistentString>
+            <PersistentString
+               value = "indexPath.section">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "FriendsController.tableView(_:viewForHeaderInSection:):FriendsController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "symbolGroup[section - calculatorSymbolSearch]">
+            </PersistentString>
+            <PersistentString
+               value = "calculatorSymbolSearch">
+            </PersistentString>
+            <PersistentString
+               value = "tableView.numberOfSections">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in UITableView.searchNumberSection(result:sections:):ExtensionsUITableView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "result.lastName">
+            </PersistentString>
+            <PersistentString
+               value = "UITableView.numberSection">
+            </PersistentString>
+            <PersistentString
+               value = "result.lastName.first?.uppercased() == section">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "UITableView.searchNumberSection(result:sections:):ExtensionsUITableView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "UITableView.numberSection">
+            </PersistentString>
+            <PersistentString
+               value = "result.lastName.first?.uppercased()">
+            </PersistentString>
+            <PersistentString
+               value = "result.lastName">
+            </PersistentString>
+            <PersistentString
+               value = "sections[i]">
+            </PersistentString>
+            <PersistentString
+               value = "sections[i] ==  result.lastName.first?.uppercased()">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in UITableView.apply(results:sections:delitions:insertions:modifications:):ExtensionsUITableView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "$0">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

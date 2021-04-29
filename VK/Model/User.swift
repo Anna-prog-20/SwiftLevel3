@@ -6,6 +6,7 @@ class User: RealmSwift.Object, Decodable {
     dynamic var id: Int = 0
     dynamic var firstName: String = ""
     dynamic var lastName: String = ""
+    var symbolName: String = ""
     dynamic var photo100: String = ""
 
     enum CodingKeys: String, CodingKey {
@@ -21,6 +22,7 @@ class User: RealmSwift.Object, Decodable {
         self.id = try! container!.decode(Int.self, forKey: .id)
         self.firstName = try! container!.decode(String.self, forKey: .firstName)
         self.lastName = try! container!.decode(String.self, forKey: .lastName)
+        self.symbolName = self.lastName.first!.uppercased() ?? ""
         self.photo100 = try! container!.decode(String.self, forKey: .photo100)
     }
     

@@ -1,22 +1,43 @@
 import UIKit
+import RealmSwift
+import Kingfisher
 
 class NewsController: UITableViewController {
-    private let cellID = String(describing: NewsCell.self)
-    var news: [News] = []
     
-    func fillData() {
-//        for i in 0...2 {
-//            let user = UserOld.init(id:i, name: "User \(i)", photo: [PhotoOld(id: 0, name: "\(i)", checkFaceImage: false, title: "", date: Date())])
-//            let new = News(id: i, user: user, title: "Новость дня \(i)", text: "\(user.name) каким-то чудом попал в сегодняшние новости!!!!", photo: [PhotoOld(id: 0, name: "news-\(i)", checkFaceImage: false, title: "", date: Date())])
-//            news.append(new)
-//        }
-    }
+    private var networkManager = NetworkManager(token: Session.inctance.token)
+    private var realm: Realm = RealmBase.inctance.getRealm()!
+    private lazy var newsResult: Results<News>? = realm.objects(News.self).sorted(byKeyPath: "date").filter("photoURLString != ''")
+    private lazy var groupsResult: Results<Group>? = realm.objects(Group.self).sorted(byKeyPath: "name")
+    private var notificationToken: NotificationToken?
+    private var notificationTokenGroups: NotificationToken?
+    private let cellID = String(describing: NewsCell.self)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fillData()
+        if groupsResult?.count == 0 {
+            networkManager.loadGroups {}
+        }
+            
+        networkManager.loadNews() {[weak self] in
+            self?.notificationToken = self?.newsResult!.observe { [weak self] (changes: RealmCollectionChange) in
+                guard let tableView = self?.tableView else {return}
+                switch changes {
+                case .initial:
+                    tableView.reloadData()
+                case .update( _, let deletions, let insertions, let modifications):
+                    tableView.apply(delitions: deletions, insertions: insertions, modifications: modifications)
+                case .error(let error):
+                    print(error)
+                }
+            }
+        }
+        
         tableView.register(UINib(nibName: cellID, bundle: nil), forCellReuseIdentifier: cellID)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
 
     // MARK: - Table view data source
@@ -28,16 +49,22 @@ class NewsController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return news.count
+        return newsResult!.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! NewsCell
-//        let new = news[indexPath.row]
-//        cell.faceImage.setImage(named: "\(new.user.photo[0].name)")
-//        cell.nameUser.text = new.user.name
-//        cell.textNew.text = new.text
-//        cell.photoNew.image = UIImage(named: new.photo[0].name)
+        if let new = newsResult?[indexPath.row] {
+            
+            if let group = groupsResult?.filter("id = \(new.sourceId < 0 ? new.sourceId*(-1): new.sourceId)") {
+                cell.faceImage.setImage(url: URL(string: group.first!.photo100)!)
+                
+                cell.nameUser.text = group.first?.name
+                cell.textNew.text = new.text
+                print(new.photoURLString)
+                cell.photoNew.kf.setImage(with: URL(string: new.photoURLString.isEmpty ? "https://vk.com/images/m_noalbum.png" : new.photoURLString)!)
+            }
+        }
         return cell
     }
     

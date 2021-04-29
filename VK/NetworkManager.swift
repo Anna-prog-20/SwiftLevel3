@@ -14,10 +14,7 @@ class NetworkManager {
     
     private let baseURL = "https://api.vk.com"
     private let token: String
-    private var realm: Realm {
-        let config = Realm.Configuration(deleteRealmIfMigrationNeeded: true)
-        return try! Realm(configuration: config)
-    }
+    private var realm: Realm = RealmBase.inctance.getRealm()!
     
     private var baseParams: Parameters {
         [
@@ -86,7 +83,9 @@ class NetworkManager {
             guard let json = response.value.map(JSON.init) else { return }
             let data = try! json["response"]["items"].rawData()
             let dataResult = try! JSONDecoder().decode([User].self, from: data)
+            let dataResultSymbol = try! JSONDecoder().decode([SymbolGroup].self, from: data)
             self?.saveData(dataResult)
+            self?.saveData(dataResultSymbol)
             completion()
         }
     }
@@ -157,6 +156,23 @@ class NetworkManager {
             guard let json = response.value.map(JSON.init) else { return }
             let data = try! json["response"]["items"].rawData()
             let dataResult = try! JSONDecoder().decode([Album].self, from: data)
+            self?.saveData(dataResult)
+            completion()
+        }
+    }
+    
+    public func loadNews(completion: @escaping () -> Void) {
+        let baseURL = "https://api.vk.com"
+        let path = "/method/newsfeed.get"
+        
+        var params = baseParams
+        params["source_ids"] = "groups"
+        params["count"] = 20
+        
+        AF.request(baseURL + path, method: .get, parameters: params).responseData { [weak self] response in
+            guard let json = response.value.map(JSON.init) else { return }
+            let data = try! json["response"]["items"].rawData()
+            let dataResult = try! JSONDecoder().decode([News].self, from: data)
             self?.saveData(dataResult)
             completion()
         }
