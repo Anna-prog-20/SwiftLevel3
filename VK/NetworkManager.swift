@@ -86,7 +86,9 @@ class NetworkManager {
             guard let json = response.value.map(JSON.init) else { return }
             let data = try! json["response"]["items"].rawData()
             let dataResult = try! JSONDecoder().decode([User].self, from: data)
+            let dataResultSymbol = try! JSONDecoder().decode([SymbolGroup].self, from: data)
             self?.saveData(dataResult)
+            self?.saveData(dataResultSymbol)
             completion()
         }
     }

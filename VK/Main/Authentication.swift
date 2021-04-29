@@ -33,7 +33,7 @@ class Authentication: UIViewController {
         components.host = "oauth.vk.com"
         components.path = "/authorize"
         components.queryItems = [
-            URLQueryItem(name: "client_id", value: "7763625"),
+            URLQueryItem(name: "client_id", value: "7763626"),
             URLQueryItem(name: "scope", value: "262150"),
             //URLQueryItem(name: "scope", value: "friends,photos,groups,stories"),
             URLQueryItem(name: "display", value: "mobile"),

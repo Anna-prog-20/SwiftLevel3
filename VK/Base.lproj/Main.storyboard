@@ -116,30 +116,30 @@
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Photo" id="joJ-w9-8tK" customClass="PhotoCell" customModule="VK" customModuleProvider="target">
-                                <rect key="frame" x="10" y="10" width="180" height="180"/>
+                                <rect key="frame" x="10" y="10" width="190" height="190"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="PBF-UM-Rk7">
-                                    <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="190" height="190"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Omj-RT-KRB">
-                                            <rect key="frame" x="3" y="3" width="174" height="174"/>
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Omj-RT-KRB">
+                                            <rect key="frame" x="3" y="3" width="184" height="184"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" restorationIdentifier="photoFriend" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="aoh-Cm-MtH">
-                                                    <rect key="frame" x="0.0" y="0.0" width="174" height="163"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="184" height="179.5"/>
                                                 </imageView>
-                                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xEN-Z4-s91">
-                                                    <rect key="frame" x="0.0" y="163" width="174" height="11"/>
+                                                <stackView opaque="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="xEN-Z4-s91">
+                                                    <rect key="frame" x="0.0" y="179.5" width="184" height="4.5"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="nameAlbum" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hgj-7x-aZo">
-                                                            <rect key="frame" x="0.0" y="0.0" width="154" height="11"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="164" height="4.5"/>
                                                             <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="1"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="countPhotos" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1EJ-Ma-0DN" userLabel="сount Photos">
-                                                            <rect key="frame" x="154" y="0.0" width="20" height="11"/>
+                                                            <rect key="frame" x="164" y="0.0" width="20" height="4.5"/>
                                                             <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="1"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="20" id="zY3-k7-aLz"/>
@@ -155,15 +155,15 @@
                                     </subviews>
                                     <color key="backgroundColor" red="0.59051717650000002" green="0.82999996239999996" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     <constraints>
-                                        <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Omj-RT-KRB" secondAttribute="trailing" constant="3" id="94W-M9-rP7"/>
-                                        <constraint firstItem="Omj-RT-KRB" firstAttribute="top" relation="greaterThanOrEqual" secondItem="PBF-UM-Rk7" secondAttribute="top" constant="3" id="NIO-HN-1nh"/>
-                                        <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Omj-RT-KRB" secondAttribute="bottom" constant="3" id="TbU-ge-zlu"/>
-                                        <constraint firstItem="Omj-RT-KRB" firstAttribute="leading" relation="lessThanOrEqual" secondItem="PBF-UM-Rk7" secondAttribute="leading" constant="3" id="eHK-0J-sNa"/>
+                                        <constraint firstAttribute="bottom" secondItem="Omj-RT-KRB" secondAttribute="bottom" constant="3" id="A1k-O5-yPt"/>
+                                        <constraint firstItem="Omj-RT-KRB" firstAttribute="top" secondItem="PBF-UM-Rk7" secondAttribute="top" constant="3" id="Mbm-l5-B7X"/>
+                                        <constraint firstAttribute="trailing" secondItem="Omj-RT-KRB" secondAttribute="trailing" constant="3" id="Z2f-ba-8NV"/>
+                                        <constraint firstItem="Omj-RT-KRB" firstAttribute="leading" secondItem="PBF-UM-Rk7" secondAttribute="leading" constant="3" id="eax-xa-KaB"/>
                                     </constraints>
                                     <directionalEdgeInsets key="directionalLayoutMargins" top="8" leading="8" bottom="8" trailing="8"/>
                                 </collectionViewCellContentView>
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
-                                <size key="customSize" width="180" height="180"/>
+                                <size key="customSize" width="190" height="190"/>
                                 <connections>
                                     <outlet property="countPhotos" destination="1EJ-Ma-0DN" id="RTy-6R-FLF"/>
                                     <outlet property="nameAlbum" destination="hgj-7x-aZo" id="CwO-da-kuC"/>
@@ -238,7 +238,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wt8-Hh-lIz" customClass="FaceImageView" customModule="VK" customModuleProvider="target">
-                                            <rect key="frame" x="5" y="3" width="35" height="35"/>
+                                            <rect key="frame" x="5" y="0.0" width="35" height="35"/>
                                             <viewLayoutGuide key="safeArea" id="bKI-jU-py0"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
@@ -318,7 +318,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oua-7e-nBp" customClass="FaceImageView" customModule="VK" customModuleProvider="target">
-                                            <rect key="frame" x="5" y="0.0" width="35" height="35"/>
+                                            <rect key="frame" x="5" y="3" width="35" height="35"/>
                                             <viewLayoutGuide key="safeArea" id="1Cs-Fc-4zX"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
@@ -483,7 +483,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LZm-H7-GFA" customClass="FaceImageView" customModule="VK" customModuleProvider="target">
-                                            <rect key="frame" x="10" y="3" width="35" height="35"/>
+                                            <rect key="frame" x="10" y="0.0" width="35" height="35"/>
                                             <viewLayoutGuide key="safeArea" id="WDO-GB-ntc"/>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>

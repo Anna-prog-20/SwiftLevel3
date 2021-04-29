@@ -11,26 +11,15 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     private var networkManager = NetworkManager(token: Session.inctance.token)
     private var realm: Realm = RealmBase.inctance.getRealm()!
     private var symbolControl: SymbolControl!
-    private var friends: [User] = []
-    private var groupSymbol: [GroupSymbol] = []
+    private lazy var friendsResult: Results<User>? = realm.objects(User.self).sorted(byKeyPath: "lastName")
+    private lazy var symbolResult: Results<SymbolGroup>? = realm.objects(SymbolGroup.self).sorted(byKeyPath: "symbol")
+    private var notificationToken: NotificationToken?
+    private var searchNotificationToken: NotificationToken?
+    private var symbolNotificationToken: NotificationToken?
     private var searchText: String = ""
     private var idFriend: Int!
     private let headerID = String(describing: HeaderSection.self)
-    
-    func fillData() {
-       networkManager.loadFriends(completion: {
-        [weak self] in
-                do {
-                    let realm = try Realm()
-                    let friends = realm.objects(User.self).sorted(byKeyPath: "lastName")
-                    self!.friends = Array(friends)
-                    self!.writeGroupFriend()
-                    self!.tableFriends.reloadData()
-                } catch {
-                    print(error)
-                }
-        })
-    }
+    private var calculatorSymbolSearch = 0
     
     override func viewDidLoad() {
         tableFriends.dataSource = self
@@ -39,9 +28,22 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         let userAuth = Session.inctance
         userAuth.getData()
         
-        fillData()
+        networkManager.loadFriends { [self] in
+            notificationToken = friendsResult!.observe { [weak self] (changes: RealmCollectionChange) in
+                guard let tableView = self?.tableFriends else {return}
+                switch changes {
+                case .initial:
+                    tableView.reloadData()
+                case .update(let results, let deletions, let insertions, let modifications):
+                    tableView.apply(results: Array(results), sections: self?.symbolResult, delitions: deletions, insertions: insertions, modifications: modifications)
+                case .error(let error):
+                    print(error)
+                }
+            }
+        }
+        
         tableView.register(UINib(nibName: headerID, bundle: nil), forHeaderFooterViewReuseIdentifier: headerID)
-        symbolControl = SymbolControl.init(frame: CGRect(x: view.frame.maxX - 20, y: 0, width: 20, height: view.frame.height),groupSymbol: groupSymbol)
+        symbolControl = SymbolControl.init(frame: CGRect(x: view.frame.maxX - 20, y: 0, width: 20, height: view.frame.height),groupSymbol: Array(symbolResult!))
         symbolControl.viewController = self
         symbolControl.isUserInteractionEnabled = true
     }
@@ -60,40 +62,34 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section <= tableView.numberOfSections else {return nil}
+        let requestFriends = friendsResult!.filter("lastName LIKE '\((Array(arrayLiteral: symbolResult!).first![section - calculatorSymbolSearch].symbol))*'")
         let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: headerID) as! HeaderSection
-        header.setBackgroundColor(color: view.backgroundColor!, alpha: 0.5)
-        header.textHeader.text = groupSymbol[section].name
-        return header
+        if requestFriends.count != 0 {
+            header.setBackgroundColor(color: view.backgroundColor!, alpha: 0.5)
+            header.textHeader.text = symbolResult![section - calculatorSymbolSearch].symbol
+            return header
+        }
+        else {
+            symbolResult = symbolResult!.filter("symbol != '\(symbolResult![section - calculatorSymbolSearch].symbol)'")
+            calculatorSymbolSearch = calculatorSymbolSearch + 1
+            return nil
+        }
     }
-
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if friendsResult!.filter("lastName LIKE '\((Array(arrayLiteral: symbolResult!).first![section - calculatorSymbolSearch].symbol))*'").count == 0 {
+            return 0.0
+        }
+        return 30
+    }
+    
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         symbolControl.frame = CGRect.init(x: symbolControl.frame.origin.x, y: scrollView.contentOffset.y + 130, width: symbolControl.frame.width, height: symbolControl.frame.height)
     }
     
-    func writeGroupFriend() {
-        var i = 0
-        var k = 0
-        var firstSymbol = ""
-        groupSymbol = []
-        
-        for friend in friends {
-            let nameFriend = "\(friend.lastName) \(friend.firstName)"
-            let friendSymbol = String(nameFriend[nameFriend.startIndex])
-            if firstSymbol != friendSymbol {
-                k = i
-                groupSymbol.append(GroupSymbol(id: i, name: friendSymbol))
-                groupSymbol[i].users.append(friend)
-                i = i + 1
-            }
-            else {
-                groupSymbol[k].users.append(friend)
-            }
-            firstSymbol = friendSymbol
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        idFriend = groupSymbol[indexPath.section].users[indexPath.row].id
+        idFriend = friendsResult!.filter("lastName LIKE '\((Array(arrayLiteral: symbolResult!).first![indexPath.section].symbol))*'")[indexPath.row].id
         clearFormatSelectedCell(row: 0, section: symbolControl.selectedSymbolId)
         symbolControl.isSelectedButton(selectedSymbolId: symbolControl.selectedSymbolId, isSelected: false)
         let photoController = self.storyboard?.instantiateViewController(withIdentifier: "Photo") as! PhotoController
@@ -108,35 +104,46 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return groupSymbol[section].users.count
+        return friendsResult?.filter("lastName LIKE '\((Array(arrayLiteral: symbolResult!).first![section].symbol))*'").count ?? 0
     }
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Friend", for: indexPath) as! FriendsCell
-        let friend = groupSymbol[indexPath.section].users[indexPath.row]
+        let friend = friendsResult!.filter("lastName LIKE '\((Array(arrayLiteral: symbolResult!).first![indexPath.section].symbol))*'")[indexPath.row]
         cell.nameFriend.text = "\(friend.lastName) \(friend.firstName)"
         cell.faceImage.setImage(url: URL(string: friend.photo100)!)
         cell.backgroundColor = UIColor.white
         return cell
     }
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return groupSymbol.count
+        return symbolResult!.count
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-            return 30
-        }
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        var request = realm.objects(User.self).sorted(byKeyPath: "lastName")
+        var searchFriendsResult = realm.objects(User.self).sorted(byKeyPath: "lastName")
         if searchText != "" && !searchText.elementsEqual(self.searchText) {
             self.searchText = searchText
-            request = realm.objects(User.self).filter("lastName CONTAINS '\(searchText)' OR firstName CONTAINS '\(searchText)'").sorted(byKeyPath: "lastName")
+            searchFriendsResult = realm.objects(User.self).filter("lastName CONTAINS '\(searchText)' OR firstName CONTAINS '\(searchText)'").sorted(byKeyPath: "lastName")
+            
+            
         }
-        friends = Array(request)
-        writeGroupFriend()
-        tableFriends.reloadData()
+        
+        friendsResult = searchFriendsResult
+        
+        searchNotificationToken = searchFriendsResult.observe { [weak self] (changes: RealmCollectionChange) in
+            guard let tableView = self?.tableFriends else {return}
+            switch changes {
+            case .initial:
+                tableView.reloadData()
+            case .update(let results, let deletions, let insertions, let modifications):
+                tableView.apply(results: Array(results), sections: self?.symbolResult, delitions: deletions, insertions: insertions, modifications: modifications)
+            case .error(let error):
+                print(error)
+            }
+        }
+        
+        symbolResult = realm.objects(SymbolGroup.self).sorted(byKeyPath: "symbol")
+        calculatorSymbolSearch = 0
     }
 }
