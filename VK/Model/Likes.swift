@@ -1,9 +1,10 @@
 import Foundation
 import RealmSwift
 
+@objcMembers
 class Likes: RealmSwift.Object, Decodable {
-    @objc dynamic var userLikes: Int = 0
-    @objc dynamic var count: Int = 0
+    dynamic var userLikes: Int = 0
+    dynamic var count: Int = 0
 
     enum CodingKeys: String, CodingKey {
         case userLikes = "user_likes"
@@ -16,4 +17,8 @@ class Likes: RealmSwift.Object, Decodable {
         self.userLikes = try! container!.decode(Int.self, forKey: .userLikes)
         self.count = try! container!.decode(Int.self, forKey: .count)
     }
+    
+//    override class func primaryKey() -> String? {
+//        return "userLikes"
+//    }
 }

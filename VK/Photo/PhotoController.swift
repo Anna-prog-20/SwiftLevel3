@@ -1,37 +1,39 @@
 import UIKit
+import RealmSwift
 
 class PhotoController: UICollectionViewController {
     
     private var networkManager = NetworkManager(token: Session.inctance.token)
+    private var realm: Realm = RealmBase.inctance.getRealm()!
     private var idFriend: Int = 0
-    var photos: [Photo]?
+    var photos: [Photo] = []
     var photosUrl: [String] = []
     
     var albums: [Album]?
     
     func fillData() {
+        albums = []
+        photosUrl = []
         networkManager.loadAlbums(idFriend: idFriend, completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
+            [weak self] in
+            do {
+                let albums = self!.realm.objects(Album.self).filter("ownerID = \(self!.idFriend)").sorted(byKeyPath: "ownerID")
+                self?.albums = Array(albums)
+                self!.albums?.forEach({ self!.photosUrl.append($0.thumbSrc)})
+                self!.collectionView.reloadData()
+            } catch {
                 print(error)
-            case let .success(albums1):
-                if ((self!.albums?.elementsEqual(albums1, by: {$0.id == $1.id})) == nil) {
-                    self!.albums = albums1
-                    self!.albums?.forEach({self!.photosUrl.append($0.thumbSrc)})
-                    self!.collectionView.reloadData()
-                }
             }
         })
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fillData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fillData()
     }
     
     func setIdFriend(idFriend: Int) {
@@ -61,6 +63,12 @@ class PhotoController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Photo", for: indexPath) as! PhotoCell
+        let requestAlbums = realm.objects(Album.self).filter("thumbSrc = '\(photosUrl[indexPath.row])'")
+        let album = Array(requestAlbums)
+        let requestCountPhotos = realm.objects(Photo.self).filter("albumID = \(album.first!.id) AND ownerID = \(idFriend)")
+        let countPhotos = Array(requestCountPhotos).count
+        cell.nameAlbum.text = album.first?.title ?? "Без названия"
+        cell.countPhotos.text = "\(countPhotos)"
         cell.photo.kf.setImage(with: URL(string: photosUrl[indexPath.row])!)
         return cell
     }
@@ -96,22 +104,16 @@ class PhotoController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+        var photoUser = PhotoUser()
+        photoUser.presentValueId  = 0
         networkManager.loadPhotosByAlbum(idFriend: idFriend, idAlbum: albums![indexPath.row].id, completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
-                print(error)
-            case let .success(photos1):
-                var photoUser = PhotoUser()
-                photoUser.presentValueId  = 0
-                if (photos1.count > 0) {
-                    photos1.forEach({photoUser.arrayValue.append($0.sizes![2].url)})
-                    
-                    let onePhotoController = self!.storyboard?.instantiateViewController(withIdentifier: "OnePhotoController") as! OnePhotoController
-                    onePhotoController.photoUser = photoUser
-                    
-                    self!.navigationController?.pushViewController(onePhotoController, animated: true)
-                }
+            let request = self.realm.objects(Photo.self).filter("albumID = \(self.albums![indexPath.row].id) AND ownerID = \(self.idFriend)")
+            self.photos = Array(request)
+            if (self.photos.count > 0) {
+                self.photos.forEach({ photoUser.arrayValue.append($0.sizesList[2].url)})
+                let onePhotoController = self.storyboard?.instantiateViewController(withIdentifier: "OnePhotoController") as! OnePhotoController
+                onePhotoController.photoUser = photoUser
+                self.navigationController?.pushViewController(onePhotoController, animated: true)
             }
         })
     }

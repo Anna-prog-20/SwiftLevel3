@@ -1,18 +1,19 @@
 import Foundation
 import RealmSwift
 
+@objcMembers
 class Group: RealmSwift.Object, Decodable {
-    @objc dynamic var id: Int = 0
-    @objc dynamic var name: String = ""
-    @objc dynamic var screenName: String = ""
-    @objc dynamic var isClosed: Int = 0
-    @objc dynamic var type: String = ""
-    @objc dynamic var isAdmin: Int = 0
-    @objc dynamic var isMember: Int = 0
-    @objc dynamic var isAdvertiser: Int = 0
-    @objc dynamic var photo50: String = ""
-    @objc dynamic var photo100: String = ""
-    @objc dynamic var photo200: String = ""
+    dynamic var id: Int = 0
+    dynamic var name: String = ""
+    dynamic var screenName: String = ""
+    dynamic var isClosed: Int = 0
+    dynamic var type: String = ""
+    dynamic var isAdmin: Int = 0
+    dynamic var isMember: Int = 0
+    dynamic var isAdvertiser: Int = 0
+    dynamic var photo50: String = ""
+    dynamic var photo100: String = ""
+    dynamic var photo200: String = ""
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -62,6 +63,10 @@ class Group: RealmSwift.Object, Decodable {
         self.photo50 = photo50
         self.photo100 = photo100
         self.photo200 = photo200
+    }
+    
+    override class func primaryKey() -> String? {
+        return "id"
     }
 }
 

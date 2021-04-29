@@ -17,6 +17,7 @@
 		950840CB254BFC8A003CE190 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950840CA254BFC8A003CE190 /* PhotoCell.swift */; };
 		951131CC25DAB85000CCEC96 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 951131CB25DAB85000CCEC96 /* WebKit.framework */; };
 		951131D425DC13CE00CCEC96 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951131D325DC13CE00CCEC96 /* NetworkManager.swift */; };
+		951524F5262534CD008AEBE0 /* RealmBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951524F4262534CD008AEBE0 /* RealmBase.swift */; };
 		95169D89256027600005987A /* NewsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95169D88256027600005987A /* NewsController.swift */; };
 		95169D92256029430005987A /* NewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95169D90256029430005987A /* NewsCell.swift */; };
 		95169D93256029430005987A /* NewsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95169D91256029430005987A /* NewsCell.xib */; };
@@ -91,6 +92,7 @@
 		950840CA254BFC8A003CE190 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		951131CB25DAB85000CCEC96 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		951131D325DC13CE00CCEC96 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		951524F4262534CD008AEBE0 /* RealmBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBase.swift; sourceTree = "<group>"; };
 		95169D88256027600005987A /* NewsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsController.swift; sourceTree = "<group>"; };
 		95169D90256029430005987A /* NewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsCell.swift; sourceTree = "<group>"; };
 		95169D91256029430005987A /* NewsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewsCell.xib; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				95D026CD256CE0D700E94F0F /* DelegateGroup.swift */,
 				95FB44A2261597BE00E7F676 /* Album.swift */,
 				95FB44A72615A2C200E7F676 /* Likes.swift */,
+				951524F4262534CD008AEBE0 /* RealmBase.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -493,6 +496,7 @@
 				959536A525690C9700284745 /* CustomNavigationViewController.swift in Sources */,
 				9508409E254BE255003CE190 /* User.swift in Sources */,
 				95FB44A82615A2C200E7F676 /* Likes.swift in Sources */,
+				951524F5262534CD008AEBE0 /* RealmBase.swift in Sources */,
 				95E4383D2552584400A5F681 /* FaceImage.swift in Sources */,
 				95840E18255C17C7008D3414 /* GroupSymbol.swift in Sources */,
 				95312B9425617D5900F884F0 /* CommentsControl.swift in Sources */,

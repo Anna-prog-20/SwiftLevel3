@@ -35,16 +35,18 @@ class Authentication: UIViewController {
         components.queryItems = [
             URLQueryItem(name: "client_id", value: "7763625"),
             URLQueryItem(name: "scope", value: "262150"),
+            //URLQueryItem(name: "scope", value: "friends,photos,groups,stories"),
             URLQueryItem(name: "display", value: "mobile"),
             URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
             URLQueryItem(name: "response_type", value: "token"),
-            URLQueryItem(name: "v", value: "5.92")
+            URLQueryItem(name: "v", value: "5.130")
         ]
         
         return URLRequest(url: components.url!)
     }
     
     override func viewDidLoad() {
+        RealmBase.inctance.startRealmBase()
         webView.load(buildAuthRequest())
     }
     

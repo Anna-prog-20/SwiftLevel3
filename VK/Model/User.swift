@@ -1,11 +1,12 @@
 import Foundation
 import RealmSwift
 
+@objcMembers
 class User: RealmSwift.Object, Decodable {
-    @objc dynamic var id: Int = 0
-    @objc dynamic var firstName: String = ""
-    @objc dynamic var lastName: String = ""
-    @objc dynamic var photo100: String = ""
+    dynamic var id: Int = 0
+    dynamic var firstName: String = ""
+    dynamic var lastName: String = ""
+    dynamic var photo100: String = ""
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -21,5 +22,9 @@ class User: RealmSwift.Object, Decodable {
         self.firstName = try! container!.decode(String.self, forKey: .firstName)
         self.lastName = try! container!.decode(String.self, forKey: .lastName)
         self.photo100 = try! container!.decode(String.self, forKey: .photo100)
+    }
+    
+    override class func primaryKey() -> String? {
+        return "id"
     }
 }

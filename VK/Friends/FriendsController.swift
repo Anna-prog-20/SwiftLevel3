@@ -1,4 +1,5 @@
 import UIKit
+import RealmSwift
 
 class FriendsController: UITableViewController, UISearchBarDelegate {
     
@@ -8,6 +9,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     @IBAction func LogOut(_ sender: UIBarButtonItem) {
     }
     private var networkManager = NetworkManager(token: Session.inctance.token)
+    private var realm: Realm = RealmBase.inctance.getRealm()!
     private var symbolControl: SymbolControl!
     private var friends: [User] = []
     private var groupSymbol: [GroupSymbol] = []
@@ -17,16 +19,16 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
     
     func fillData() {
        networkManager.loadFriends(completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
-                print(error)
-            case let .success(users):
-                self!.friends = users
-                self!.friends.sort(by: {$0.lastName<$1.lastName})
-                self!.writeGroupFriend()
-                self!.tableFriends.reloadData()
-            }
+        [weak self] in
+                do {
+                    let realm = try Realm()
+                    let friends = realm.objects(User.self).sorted(byKeyPath: "lastName")
+                    self!.friends = Array(friends)
+                    self!.writeGroupFriend()
+                    self!.tableFriends.reloadData()
+                } catch {
+                    print(error)
+                }
         })
     }
     
@@ -72,6 +74,7 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         var i = 0
         var k = 0
         var firstSymbol = ""
+        groupSymbol = []
         
         for friend in friends {
             let nameFriend = "\(friend.lastName) \(friend.firstName)"
@@ -127,37 +130,13 @@ class FriendsController: UITableViewController, UISearchBarDelegate {
         }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        var request = realm.objects(User.self).sorted(byKeyPath: "lastName")
         if searchText != "" && !searchText.elementsEqual(self.searchText) {
             self.searchText = searchText
-            networkManager.loadFriendsByNameCurrentUser(idCurrentUser: Session.inctance.userId, searchName: searchText, completion: {
-                [weak self] result in
-                switch result {
-                case let .failure(error):
-                    print(error)
-                case let .success(groups):
-                    self!.friends = groups
-                    self!.friends.sort(by: {$0.lastName<$1.lastName})
-                    self!.groupSymbol = []
-                    self!.writeGroupFriend()
-                    self?.tableFriends.reloadData()
-                }
-            })
-        } else {
-            networkManager.loadFriends(completion: {
-                 [weak self] result in
-                 switch result {
-                 case let .failure(error):
-                     print(error)
-                 case let .success(users):
-                     self!.friends = users
-                     self!.friends.sort(by: {$0.lastName<$1.lastName})
-                    self!.groupSymbol = []
-                    self!.writeGroupFriend()
-                    self?.tableFriends.reloadData()
-                 }
-             })
+            request = realm.objects(User.self).filter("lastName CONTAINS '\(searchText)' OR firstName CONTAINS '\(searchText)'").sorted(byKeyPath: "lastName")
         }
+        friends = Array(request)
+        writeGroupFriend()
+        tableFriends.reloadData()
     }
-    
 }
-

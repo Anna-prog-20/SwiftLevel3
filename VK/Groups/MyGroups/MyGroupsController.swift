@@ -1,10 +1,12 @@
 import UIKit
 import Kingfisher
+import RealmSwift
 
 class MyGroupsController: UITableViewController, DelegateGroup {
     
     private var networkManager = NetworkManager(token: Session.inctance.token)
-    var groups: [Group]?
+    private var realm: Realm = RealmBase.inctance.getRealm()!
+    private var groups: [Group]?
     
     @IBAction func addGroup(_ sender: Any) {
         let groupsController = self.storyboard?.instantiateViewController(withIdentifier: "GroupsController") as! GroupsController
@@ -12,28 +14,26 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     }
     
     func update(group: Group) {
-        let groupFilter = self.groups!.filter({
-            (item: Group) -> Bool in
-            return item.name.range(of: group.name , options: .caseInsensitive) != nil
-        })
-        if groupFilter.count <= 0 {
-            self.groups!.append(group)
-        }
+//        let groupFilter = self.groups!.filter({
+//            (item: Group) -> Bool in
+//            return item.name.range(of: group.name , options: .caseInsensitive) != nil
+//        })
+//        if groupFilter.count <= 0 {
+//            self.groups!.append(group)
+//        }
     }
     
     func fillData() {
-        networkManager.loadGroups(allGroups: 0, completion: {
-            [weak self] result in
-            switch result {
-            case let .failure(error):
+        networkManager.loadGroups {
+            [weak self] in
+            do {
+                let groups = self!.realm.objects(Group.self)
+                self!.groups = Array(groups)
+                self!.tableView.reloadData()
+            } catch {
                 print(error)
-            case let .success(groups1):
-                if ((self!.groups?.elementsEqual(groups1, by: {$0.id == $1.id})) == nil) {
-                    self!.groups = groups1
-                    self!.tableView.reloadData()
-                }
             }
-        })
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -41,7 +41,6 @@ class MyGroupsController: UITableViewController, DelegateGroup {
         
         let group = groups![indexPath.row]
         cell.nameGroup.text = group.name
-        
         cell.faceImage.setImage(url: URL(string: group.photo50)!)
         
         return cell
@@ -49,11 +48,11 @@ class MyGroupsController: UITableViewController, DelegateGroup {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        fillData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fillData()
     }
     // MARK: - Table view data source
     

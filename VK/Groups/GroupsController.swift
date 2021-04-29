@@ -1,5 +1,6 @@
 import UIKit
 import Kingfisher
+import RealmSwift
 
 class GroupsController: UITableViewController, UISearchBarDelegate {
     
@@ -52,12 +53,13 @@ class GroupsController: UITableViewController, UISearchBarDelegate {
                     print(error)
                 case let .success(groups):
                     self!.groups = groups
+                    self!.tableGroups.reloadData()
                 }
             })
         } else {
             groups = []
+            tableGroups.reloadData()
         }
-        tableGroups.reloadData()
     }
    
 }
