@@ -35,6 +35,7 @@ class Authentication: UIViewController {
         components.queryItems = [
             URLQueryItem(name: "client_id", value: "7763626"),
             URLQueryItem(name: "scope", value: "262150"),
+            //URLQueryItem(name: "scope", value: "friends,photos,groups,stories"),
             URLQueryItem(name: "display", value: "mobile"),
             URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
             URLQueryItem(name: "response_type", value: "token"),
